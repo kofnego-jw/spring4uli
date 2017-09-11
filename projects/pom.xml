@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>at.ac.uibk.fiba.wang.spring4uli</groupId>
+    <artifactId>at.ac.uibk.fiba.wang.spring4uli</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <modules>
+        <module>t01di</module>
+    </modules>
+
+    <packaging>pom</packaging>
+
+    <!-- Hier sind Dependencies für alle Unterprojekte gelistet, sowie die notwendigen Build-Plugins -->
+
+    <properties>
+        <java.version>1.8</java.version> <!-- Java 8 -->
+        <spring-boot.version>1.5.6.RELEASE</spring-boot.version>
+    </properties>
+
+    <dependencies>
+        <!-- Da wir nicht ein Spring-Boot-Projekt als Parent angegeben haben,
+             müssen wir die Abhängigkeiten selbst einfügen. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>${spring-boot.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <!-- Hier das Spring-Boot-Maven-Plugin -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

@@ -9,6 +9,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <modules>
         <module>t01di</module>
+        <module>t02di2</module>
     </modules>
 
     <packaging>pom</packaging>

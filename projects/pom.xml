@@ -11,6 +11,7 @@
         <module>t01di</module>
         <module>t02di2</module>
         <module>t03test</module>
+        <module>t04jpa</module>
     </modules>
 
     <packaging>pom</packaging>

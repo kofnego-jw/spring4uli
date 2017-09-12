@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface PersonRepo extends JpaRepository<Person, Long> {
 
-    List<Person> findAllByNameLike(String name);
+    List<Person> findByNameContaining(String name);
 
-    @Query("SELECT p FROM Person p WHERE p.name LIKE %?1%")
-    List<Person> findByName(String name);
+    @Query("SELECT p FROM Person p WHERE p.name = ?1")
+    Person findByName(String name);
 
 }

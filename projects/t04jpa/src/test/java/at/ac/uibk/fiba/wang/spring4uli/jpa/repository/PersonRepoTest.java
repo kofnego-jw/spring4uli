@@ -47,9 +47,9 @@ public class PersonRepoTest extends H2TestBase {
 
     @Test
     public void t04_likeQuery() {
-        List<Person> list = personRepo.findAllByNameLike("Nam");
-        Assert.assertEquals(0, list.size());
-        list = personRepo.findByName("Nam");
-        Assert.assertTrue(!list.isEmpty());
+        List<Person> list = personRepo.findByNameContaining("Nam");
+        Assert.assertEquals(1, list.size());
+        Person p = personRepo.findByName("Name");
+        Assert.assertNotNull(p);
     }
 }

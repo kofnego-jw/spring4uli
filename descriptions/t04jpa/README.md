@@ -264,3 +264,74 @@ in MySQL. Will man schauen, ob die Daten wirklich "richtig" geschrieben worden s
 Properties-Datei schreiben, welche genau diese veranlasst.
 
 
+## Service-Layer
+
+Es ist inzwischen unbestritten, dass two-tiered Applikationen (Backend + Web) schwieriger zu verwalten 
+sind. Die meisten modernen Applikationen gebrauchen mindestens 3-Layers: Backend, Domain und Web.
+
+Durch das Verwenden von Repository kann man nun leicht zwischen Web und Repository noch eine Schicht einfügen,
+die sog. Service-Layer. In der Tat ist Service-Layer nicht notwendig, man kann ja alles in Web-Controllern 
+programmieren. Aber es gibt gute Gründe, um Service-Layer zu verwenden.
+
+Eine Technik, die ich oft verwende, ist die "Anreicherung" der Datenobjekte in Service-Layer:
+
+
+### Anzeige der Objekte mit mehr Information
+
+Die Idee ist einfach: Das Objekt, das ich in der Datenbank speichere, ist nicht immer das Objekt, das ich 
+bei diversen Operationen brauche.
+
+So kann es sein, dass ich beim Speichern und Verändern einer Person-Entität tatsächlich nur die Person brauche:
+Name, Email und Information sind alles, was ich brauche. Beim Speichern ist das Objekt also recht einfach.
+
+Aber bei der Anzeige einer Person braucht man auch alle Projekte und Bilder, mit denen diese Person in 
+Verbindung steht. Ich muss also die Datenbank nicht nur nach Person, sondern auch nach Projekten und Bildern
+abfragen. Das Ergebnis dieser Abfragen kann man dann in einem "erweiterten" Person-Objekt an Web-Tier liefern.
+
+Nun könnte man meinen, dass man diese Information auch per Reverse-Mapping einer zur Verfügung steht. Und
+das stimmt. So schafft man aber zirkuläre Abhängigkeiten, die möglicherweise zu Problemen führen können. 
+
+Aber der Vorteil dieser Vorgehensweise sehe ich v.a. darin, dass die Datenbank-Operationen explizit werden. 
+Jede Entität enthält nur jene Felder, die auch in der Datenbank in der Tabelle (bzw. in einer JoinTable
+zu dieser Entität) gespeichert werden. Und andere Felder sind nur in View-Objekten vorhanden, die man 
+nicht verändern kann.
+
+Hier ein Beispiel: Nehmen wir an, die Person-Klasse hat nicht nur Name, Email und Info als Felder, sondern 
+auch ein Feld projects, in denen alle Projekten aufgelistet sind, in denen diese Person als Leiter 
+arbeitet. Was passiert, wenn man ein neues Projekt erstellt und dieses in das Set einfügt? Bekommt das
+neue Projekt automatisch diese Person als Leiter? Oder wird das nicht passieren? Muss man als Programmierer
+darauf aufpassen?
+
+Um dieses Problem zu entgehen, vermeide ich reverse mapping der Objekten...
+
+
+### Service-Layer-Klassen
+
+Während die Repository an Entitäten gekoppelt sind, sollten sich die Service-Layer-Objekte an Operationen 
+orintieren, zumindest glaube ich das. 
+
+Ein typisches Beispiel für ein Service wäre z.B. ein Service, mit dem man Personen Projekten zuweist. Nehmen
+wir an, dass der Projekt-Leiter seine Mitarbeiter aussuchen kann. Bei der Zuweisung zu einem Projekt soll
+die Daten nicht nur in der Datenbank gespeichert werden, sondern auch ein Email an die Person verschickt 
+werden.
+
+Um solche "Kopplung" von Operationen zu ermöglichen, wäre ein Service vom Vorteil. Ein Service kann bspw. 
+das Person- und das Projekt-Repository und ein Email-Sender gebrauchen, um genau dies zu erreichen.
+
+Außerdem kann Transaktions-Management auch in Service-Layer wirken, um mehrere Daten-Updates in einer Transaktion
+durchzuführen.
+
+
+### Erstellen eines Service
+
+Spring macht das Erstellen eines Services recht einfach. Eine Klasse erstellen, diese mit @Component oder @Service
+annotieren, mittels @Autowired die Repositories hineinbringen, und schon hat man ein Service bereit.
+
+Im Gegensatz zu Repository kann man prorammatisch bei CRUD-Operationen zusätzliche Routinen ausführen. Ein Beispiel:
+Wenn zwei Personen mit denselben Namen gespeichert werden, kann ein Service ein Exception mit zusätzlichen
+Informationen werfen.
+
+Damit Spring die Service-Klassen auch finden kann, muss in der Configurationsdatei JpaSpringAppDefinition noch mit
+@ComponentScan mit den Basispaketen annotiert weren.
+
+

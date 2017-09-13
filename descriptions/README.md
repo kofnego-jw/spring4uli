@@ -32,3 +32,20 @@ Studiere die pom.xml in "projects". Da wird man entdecken dass
 2. die Spring-Dependencies (über Spring-Boot) eingebunden werden.
 
 Weiter geht es mit "t01di".
+
+
+## Einige Fehler, die ich begangen habe während des Erstellen 
+dieser Projekte:
+
+### Test-Dependencies nicht richtig eingestellt
+
+Oft habe ich vergessen H2 als Test-Dependency zu verwenden. Jetzt habe 
+ich H2 einfach als Test-Dependency in das Haupt-POM geschrieben.
+
+### Falsche Konfiguration von Springboot Maven Plugin
+
+Springboot Maven Plugin hilft bei der Erstellung eines lauffähigen
+JARs. Allerdings verhindert es -- wenn man die Konfiguration auf 
+"repackage" stellt --, dass eine einbindbare Library erstellt wird.
+Man sollte dieses Plugin daher nur bei jenem Modul verwenden, das
+von keinem anderen gebraucht wird.

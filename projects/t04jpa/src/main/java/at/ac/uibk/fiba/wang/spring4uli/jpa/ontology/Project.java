@@ -1,6 +1,7 @@
 package at.ac.uibk.fiba.wang.spring4uli.jpa.ontology;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -27,7 +28,7 @@ public class Project {
     }, inverseJoinColumns = {
             @JoinColumn(name = "LABORATOR_ID")
     })
-    private Set<Person> laborators;
+    private Set<Person> laborators = new HashSet<>();
 
     public Project() {
     }

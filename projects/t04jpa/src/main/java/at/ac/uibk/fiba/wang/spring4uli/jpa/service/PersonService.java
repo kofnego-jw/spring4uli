@@ -2,7 +2,9 @@ package at.ac.uibk.fiba.wang.spring4uli.jpa.service;
 
 import at.ac.uibk.fiba.wang.spring4uli.jpa.MyJpaException;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PersonRepo;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.ProjectRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +15,12 @@ public class PersonService {
 
     private final PersonRepo repo;
 
+    private final ProjectRepo projectRepo;
+
     @Autowired
-    public PersonService(PersonRepo repo) {
+    public PersonService(PersonRepo repo, ProjectRepo projectRepo) {
         this.repo = repo;
+        this.projectRepo = projectRepo;
     }
 
     public List<Person> findAll() {
@@ -37,6 +42,18 @@ public class PersonService {
         if (inDb!=null)
             throw new MyJpaException("Name already in database.");
         return repo.save(p);
+    }
+
+    public PersonFullInfo getFullInfo(Long id) {
+        Person p = findOne(id);
+        if (p==null) return null;
+        List<Project> asLeader = projectRepo.findAllByLeader(p);
+        List<Project> asLaborator = projectRepo.findAllByLaboratorsHavingPerson(p);
+        return new PersonFullInfo(p, asLeader, asLaborator);
+    }
+
+    public void delete(Long id) {
+        repo.delete(id);
     }
 
 

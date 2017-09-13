@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -23,11 +24,11 @@ public class PersonRepoTest extends H2TestBase {
     protected PictureRepo pictureRepo;
 
 
-    @Test
-    public void t01_assertDatabaseIsEmpty() throws Exception {
-        List<Person> list = personRepo.findAll();
-        Assert.assertTrue(list.isEmpty());
-    }
+//    @Test
+//    public void t01_assertDatabaseIsEmpty() throws Exception {
+//        List<Person> list = personRepo.findAll();
+//        Assert.assertTrue(list.isEmpty());
+//    }
 
     private static Long personId;
 
@@ -51,5 +52,10 @@ public class PersonRepoTest extends H2TestBase {
         Assert.assertEquals(1, list.size());
         Person p = personRepo.findByName("Name");
         Assert.assertNotNull(p);
+    }
+
+    @Test
+    public void t05_delete() {
+        personRepo.delete(personId);
     }
 }

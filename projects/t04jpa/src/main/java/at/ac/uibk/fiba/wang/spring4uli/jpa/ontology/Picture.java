@@ -2,6 +2,7 @@ package at.ac.uibk.fiba.wang.spring4uli.jpa.ontology;
 
 import javax.persistence.*;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,7 +29,7 @@ public class Picture {
     }, inverseJoinColumns = {
             @JoinColumn(name = "PERSON_ID")
     })
-    private Set<Person> persons;
+    private Set<Person> persons = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "PICTURE_PROJECT", joinColumns = {
@@ -36,7 +37,7 @@ public class Picture {
     }, inverseJoinColumns = {
             @JoinColumn(name = "PROJECT_ID")
     })
-    private Set<Project> projects;
+    private Set<Project> projects = new HashSet<>();
 
     public Picture() {
     }

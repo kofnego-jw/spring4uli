@@ -5,13 +5,20 @@ import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PersonRepo;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.ProjectRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PersonService.class);
 
     private final PersonRepo repo;
 
@@ -56,5 +63,23 @@ public class PersonService {
         repo.delete(id);
     }
 
+    public Person saveOrGet(Person p) {
+        if (p==null) return null;
+        if (p.getId()!=null) return findOne(p.getId());
+        try {
+            return saveOrUpdate(p);
+        } catch (Exception e) {
+            LOGGER.error("Cannot save a person.", e);
+            return null;
+        }
+    }
+
+    public Set<Person> saveOrGet(Set<Person> persons) {
+        if (persons==null) return Collections.emptySet();
+        return persons.stream()
+                .map(x -> saveOrGet(x))
+                .filter(x -> x!=null)
+                .collect(Collectors.toSet());
+    }
 
 }

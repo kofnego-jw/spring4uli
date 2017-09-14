@@ -12,7 +12,7 @@ public class ProjectFW {
 
     public final PersonFW leader;
 
-    protected ProjectFW(Long id, String name, String goal, PersonFW leader) {
+    public ProjectFW(Long id, String name, String goal, PersonFW leader) {
         this.id = id;
         this.name = name;
         this.goal = goal;

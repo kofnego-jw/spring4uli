@@ -34,8 +34,7 @@ Studiere die pom.xml in "projects". Da wird man entdecken dass
 Weiter geht es mit "t01di".
 
 
-## Einige Fehler, die ich begangen habe während des Erstellen 
-dieser Projekte:
+## Einige Fehler, die ich begangen habe während des Erstellen dieser Projekte:
 
 ### Test-Dependencies nicht richtig eingestellt
 

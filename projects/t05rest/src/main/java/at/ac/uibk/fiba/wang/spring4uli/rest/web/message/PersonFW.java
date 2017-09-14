@@ -12,11 +12,17 @@ public class PersonFW {
 
     public final String info;
 
-    protected PersonFW(Long id, String name, String email, String info) {
+    public PersonFW(Long id, String name, String email, String info) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.info = info;
+    }
+
+    public Person toPerson() {
+        Person person = new Person(name, email, info);
+        person.setId(id);
+        return person;
     }
 
     public static PersonFW createPersonFW(Person p) {

@@ -23,7 +23,7 @@ public class Picture {
     @Column(name = "CONTENT")
     private byte[] content;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "PICTURE_PERSON", joinColumns = {
             @JoinColumn(name = "PICTURE_ID")
     }, inverseJoinColumns = {
@@ -31,7 +31,7 @@ public class Picture {
     })
     private Set<Person> persons = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "PICTURE_PROJECT", joinColumns = {
             @JoinColumn(name = "PICTURE_ID")
     }, inverseJoinColumns = {

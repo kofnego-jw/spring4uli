@@ -1,10 +1,26 @@
 package at.ac.uibk.fiba.wang.spring4uli.jpa.repository;
 
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Picture;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface PictureRepo extends JpaRepository<Picture, Long> {
+
+    Picture findByPath(String path);
+
+    @Query("SELECT p.path FROM Picture p")
+    List<String> listAllPaths();
+
+    @Query("SELECT p.path FROM Picture p WHERE ?1 MEMBER OF p.persons")
+    List<String> findAllPicturesContainingPerson(Person person);
+
+    @Query("SELECT p.path FROM Picture p WHERE ?1 MEMBER OF p.projects")
+    List<String> findAllPicturesContainingProject(Project project);
 
 }

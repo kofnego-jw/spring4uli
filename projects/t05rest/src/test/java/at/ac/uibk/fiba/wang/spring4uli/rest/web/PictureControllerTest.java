@@ -50,7 +50,7 @@ public class PictureControllerTest extends H2TestBase {
         MockMultipartFile file = new MockMultipartFile(SAMPLE_JPEG.getName(), SAMPLE_JPEG.getName(), "image/jpeg",
                 FileUtils.readFileToByteArray(SAMPLE_JPEG));
         ResponseEntity<PictureFullMsg> resp = controller.create(file, "" + adamId + "," + bertaId, "" + project2Id);
-//        System.out.println(resp.getBody().message);
+        System.out.println(resp.getBody().message);
         Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
         PictureFull p = resp.getBody().picture;
         pictId = p.id;

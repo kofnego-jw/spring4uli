@@ -7,8 +7,6 @@ import java.util.List;
 
 public class PictureFull extends PictureFW {
 
-    public final Long id;
-
     public final String type;
 
     public final List<PersonFW> persons;
@@ -19,10 +17,9 @@ public class PictureFull extends PictureFW {
 
     public final byte[] thumb;
 
-    public PictureFull(String path, Long id, String type, List<PersonFW> persons, List<ProjectFW> projects,
+    public PictureFull(Long id, String path, String type, List<PersonFW> persons, List<ProjectFW> projects,
                        byte[] content, byte[] thumb) {
-        super(path);
-        this.id = id;
+        super(id, path);
         this.type = type;
         this.persons = persons;
         this.projects = projects;
@@ -34,6 +31,6 @@ public class PictureFull extends PictureFW {
         String type = p.getType()==null ? PictureType.UNKNOWN.name() : p.getType().name();
         List<PersonFW> persons = PersonFW.createPersonFWs(p.getPersons());
         List<ProjectFW> projects = ProjectFW.createProjectFWList(p.getProjects());
-        return new PictureFull(p.getPath(), p.getId(), type, persons, projects, p.getContent(), thumb);
+        return new PictureFull(p.getId(), p.getPath(), type, persons, projects, p.getContent(), thumb);
     }
 }

@@ -1,10 +1,7 @@
 package at.ac.uibk.fiba.wang.spring4uli.jpa.service;
 
 import at.ac.uibk.fiba.wang.spring4uli.jpa.MyJpaException;
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Picture;
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.PictureType;
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.*;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PictureRepo;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,16 +36,16 @@ public class PictureService {
         return pictureRepo.findByPath(path);
     }
 
-    public List<String> listAll() {
+    public List<PictureProjection> listAll() {
         return pictureRepo.listAllPaths();
     }
 
-    public List<String> listAllContainingPerson(Person p) {
+    public List<PictureProjection> listAllContainingPerson(Person p) {
         if (p==null) return Collections.emptyList();
         return pictureRepo.findAllPicturesContainingPerson(p);
     }
 
-    public List<String> listAllContainingProject(Project project) {
+    public List<PictureProjection> listAllContainingProject(Project project) {
         if (project==null) return Collections.emptyList();
         return pictureRepo.findAllPicturesContainingProject(project);
     }

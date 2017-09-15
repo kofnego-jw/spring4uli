@@ -3,6 +3,7 @@ package at.ac.uibk.fiba.wang.spring4uli.jpa.service;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.H2TestBase;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Picture;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.PictureProjection;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PersonRepo;
 import at.ac.uibk.fiba.wang.spring4uli.testhelper.TestData;
@@ -58,7 +59,7 @@ public class PictureServiceTest extends H2TestBase {
 
     @Test
     public void t04_readPictures() {
-        List<String> paths = service.listAll();
+        List<PictureProjection> paths = service.listAll();
         Assert.assertEquals(4, paths.size());
         Picture p = service.findOne("sample.jpg");
         Assert.assertNotNull(p);
@@ -69,9 +70,9 @@ public class PictureServiceTest extends H2TestBase {
 
     @Test
     public void t05_listRelevantPictures() {
-        List<String> picts = service.listAllContainingPerson(personRepo.findByName("Chris"));
+        List<PictureProjection> picts = service.listAllContainingPerson(personRepo.findByName("Chris"));
         System.out.println(picts);
-        Assert.assertTrue(picts.contains("sample.tif"));
+        Assert.assertTrue(picts.stream().map(x -> x.getPath()).filter(x -> x.equals("sample.tif")).findAny().isPresent());
         Assert.assertTrue(picts.size()==1);
         picts = service.listAllContainingProject(projectRepo.findByName("Project two"));
         Assert.assertEquals(2, picts.size());
@@ -87,7 +88,7 @@ public class PictureServiceTest extends H2TestBase {
 
     @Test
     public void t06a_assertMorePictures() {
-        List<String> list = service.listAllContainingPerson(personRepo.findByName("Dana"));
+        List<PictureProjection> list = service.listAllContainingPerson(personRepo.findByName("Dana"));
         Assert.assertEquals(1, list.size());
         list = service.listAllContainingProject(projectRepo.findByName("Project one"));
         Assert.assertEquals(0, list.size());
@@ -96,14 +97,14 @@ public class PictureServiceTest extends H2TestBase {
 
     @Test
     public void t07_deletePictures() {
-        List<String> paths = service.listAll();
+        List<PictureProjection> paths = service.listAll();
         paths.stream()
-                .forEach(x -> service.delete(x));
+                .forEach(x -> service.delete(x.getId()));
     }
 
     @Test
     public void t08_assertNoMorePictures() {
-        List<String> paths = service.listAll();
+        List<PictureProjection> paths = service.listAll();
         Assert.assertTrue(paths.isEmpty());
     }
 

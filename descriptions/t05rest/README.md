@@ -453,3 +453,83 @@ ID 1 bekommen hat, wieder die ID 1 hat: Hibernate hat ja bereits eine
 Person mit 1 angelegt, und die nächste verfügbare ID ist eine höhere
 Zahl...
 
+
+### ImageServeController
+
+Im Gegensatz zu anderen Controllern wird beim Aufruf dieses Kontrollers
+binäre Daten zurückgegeben: unter "/images/files/..." sollen die 
+eigentlich Dateien zurückgegeben werden, und unter "/images/thumbs/..."
+die ThumbNails.
+
+Die Thumbnails werden mit ImageService erstellt, welche mittels 
+@Autowired in die Service eingebracht wird.
+
+Um binäre Daten schreiben zu können, verwendet die Methode ein 
+HttpServletResponse-Objekt, das von Spring direkt eingebracht wird:
+
+``` 
+    @RequestMapping("/thumbs/{path:.+}")
+    public void serveThumb(@PathVariable("path") String path, HttpServletResponse resp) {
+        ...
+    }
+
+```
+Da Spring normalerweise die Pfad-Angabe automatisch vor dem letzten "." 
+kappt, müssen wir ein RegEx angeben, welche den ganzen Pfad erreicht:
+"{path:.+}"
+
+Und da die Methode ein HttpServletResponse verlangt, wird dieses auch
+automatisch eingebracht. Die Methoden lesen die Daten aus und schreibt
+dann content von Picture in den OutputStream von HttpServletResponse.
+
+
+#### Test
+
+Da dieser Controller ein HttpServletResponse braucht, muss er anders
+getestet werden. Hier annotieren wir die Klasse mit
+
+``` 
+@AutoConfigureMockMvc
+@SpringBootTest
+@WebAppConfiguration
+@ContextConfiguration(classes = {RestSpringAppDefinition.class})
+@PropertySource("classpath:/h2test.properties")
+@RunWith(SpringJUnit4ClassRunner.class)
+```
+
+@RunWith und @ContextConfiguration kennen wir ja schon. Bei 
+@PropertySource muss man darauf achten, dass "classpath:" vor der 
+Properties-Datei steht. Sonst sucht Spring in Servlet-Root nach der
+Properties-Datei.
+
+@SpringBootTest @AutoConfigureMockMvc und @WebAppConfiguration sorgen
+dafür, dass wir beim Testen ein Web-Umgebung haben. Und nun können
+wir die Tests durchführen. Zunächst nehmen wir ein MockMvc von der 
+Test-Umgebung:
+
+``` 
+    @Autowired
+    MockMvc mockMvc;
+
+```
+
+Mit mockMvc können wir dann Http-Requests durchführen.
+
+``` 
+mockMvc.perform(MockMvcRequestBuilders.get("/images/files/sample.jpg"))
+```
+
+Das Ergebnis dieser Abfrage können wir nun testen. Das machen wir mit
+
+``` 
+... .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+```
+
+Stimmt das Ergebnis nicht überein, wird ein AssertionError geworfen und
+der Test schlägt fehl.
+
+
+## Ende
+
+Damit haben wir hoffentlich alle Endpoints für die WebApp definiert. Jetzt
+brauchen wir nur noch ein Frontend.

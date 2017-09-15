@@ -1,9 +1,6 @@
 package at.ac.uibk.fiba.wang.spring4uli.rest.web;
 
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Picture;
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.PictureType;
-import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.*;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.service.PersonService;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.service.PictureService;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.service.ProjectService;
@@ -38,7 +35,7 @@ public class PictureController {
 
     @RequestMapping(value = "", method = {RequestMethod.GET})
     public ResponseEntity<PictureListMsg> listAll() {
-        List<String> paths = pictureService.listAll();
+        List<PictureProjection> paths = pictureService.listAll();
         return ResponseEntity.ok(new PictureListMsg(PictureFW.createPictureFWs(paths)));
     }
 
@@ -59,7 +56,7 @@ public class PictureController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new PictureListMsg("Cannot find person with ID " + personId + "."));
         }
-        List<String> picts = pictureService.listAllContainingPerson(p);
+        List<PictureProjection> picts = pictureService.listAllContainingPerson(p);
         return ResponseEntity.ok(new PictureListMsg(PictureFW.createPictureFWs(picts)));
     }
 
@@ -70,7 +67,7 @@ public class PictureController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new PictureListMsg("Cannot find project with ID " + projectId + "."));
         }
-        List<String> picts = pictureService.listAllContainingProject(p);
+        List<PictureProjection> picts = pictureService.listAllContainingProject(p);
         return ResponseEntity.ok(new PictureListMsg(PictureFW.createPictureFWs(picts)));
     }
 

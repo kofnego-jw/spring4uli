@@ -11,7 +11,10 @@ import java.util.stream.Stream;
 
 @SpringBootApplication
 @Import(JpaSpringAppDefinition.class)
-@ComponentScan("at.ac.uibk.fiba.wang.spring4uli.rest.web")
+@ComponentScan(basePackages = {
+        "at.ac.uibk.fiba.wang.spring4uli.rest.service",
+        "at.ac.uibk.fiba.wang.spring4uli.rest.web"
+})
 public class RestSpringAppDefinition {
 
     public static void main(String[] args) {

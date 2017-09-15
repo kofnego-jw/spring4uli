@@ -53,6 +53,20 @@ public class PictureService {
         return pictureRepo.findAllPicturesContainingProject(project);
     }
 
+    public Picture saveOrUpdate(Picture p) throws MyJpaException {
+        if (p.getPath()==null || p.getPath().isEmpty()) {
+            throw new MyJpaException("Cannot save picture without path.");
+        }
+        Set<Project> inDbProjects = projectService.saveOrGet(p.getProjects());
+        Set<Person> inDbPersons = personService.saveOrGet(p.getPersons());
+        p.setPersons(inDbPersons);
+        p.setProjects(inDbProjects);
+        if (p.getType()==null) {
+            p.setType(PictureType.guessType(p.getPath()));
+        }
+        return pictureRepo.save(p);
+    }
+
     public Picture save(String path, File file, Set<Person> persons, Set<Project> projects, boolean overwrite)
             throws MyJpaException {
         if (!file.exists() || !file.isFile() || !file.canRead())
@@ -75,7 +89,7 @@ public class PictureService {
         Set<Person> inDbPersons = personService.saveOrGet(persons);
         PictureType type = PictureType.guessType(file.getName());
         Picture p = new Picture(path, type, content, inDbPersons, inDbProjects);
-        return pictureRepo.save(p);
+        return saveOrUpdate(p);
     }
 
     public void delete(String path) {
@@ -83,6 +97,10 @@ public class PictureService {
         if (p!=null) {
             pictureRepo.delete(p);
         }
+    }
+
+    public void delete(Long id) {
+        pictureRepo.delete(id);
     }
 
 

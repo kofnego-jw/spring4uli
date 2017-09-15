@@ -372,3 +372,84 @@ Helper-Klassen, welche das Testen vereinfachen. Wichtig dabei ist
 natürlich, dass dieser Helper auf die Ontology basieren und deswegen
 zum Test von Ontologie nicht geeignet ist.
 
+
+## Bemerkungen zu Controllern
+
+### PersonController und ProjectController
+
+Wie man unschwer sieht, beinhalten beide Controller die jeweiligen
+CRUD-Operationen für Person resp. Project.
+
+Bei der Create- und Update-Operationen müssen auch Angaben zu Person
+und Projekt gemacht werden. Hier kann man die Flyweight- bzw. 
+Full-Objekte wiederverwenden. Das macht man, in dem man die Konstruktoren
+mit `@JsonCreator`  bzw. `@JsonProperty` annotiert. So kann Jackson
+diese Objekte anhand von JSON-Strings erstellen.
+
+Wenn wir JSON-Objekte in HTTP-Request-Body hineinschreiben, dann 
+"erkennt" Spring mit `@RequestBody`, dass es Jackson anweisen soll,
+diese JSON-String soll zu einem bestimmten Typ von Java-Objekt 
+rückverwandelt werden. So können wir in Frontend JavaScript-Objekte
+verwenden, diese als Body (siehe t06angular) posten und erhalten 
+im Backend dann ein Java-Objekt zurück, das wir dann weiter 
+verarbeiten können.
+
+```
+    @RequestMapping(value = "", method = {RequestMethod.POST, RequestMethod.PUT})
+    public ResponseEntity<PersonFullMsg> create(@RequestBody PersonFW personFW) {
+        return createOrUpdate(personFW, null);
+    }
+```
+
+Hier nimmt Spring ein PersonFW-Objekt in RequestBody an und weist 
+Jackson, das JSON-String zu PersonFW zu deserialisieren. Das Tolle an der 
+Geschichte ist, dass Jackson in der Lage ist, nicht nur 
+"JavaScript-Primitives" (z.B. Integer, Long, String) zu füllen, sondern
+auch Felder, die aus anderen Java-Objekten bestehen. Wichtig dabei
+ist natürlich, dass auch diese Felder ein @JsonCreator (oder einen
+Standard-Konstruktor) haben.
+
+
+### PictureController
+
+Wenn man Dateien hochladen will, dann scheint ein JSON-RequestBody 
+nicht geeignet zu sein. (Das muss ich noch prüfen!) Hier muss man 
+beim Upload auf "multipart/form-data" zurückgreifen. Wenn man 
+eine HTML-Form an einen Spring-Controller posten will, so muss man die
+Form-Felder mit @RequestParam kennzeichnen:
+
+```
+    @RequestMapping(value = "", method = {RequestMethod.POST})
+    public ResponseEntity<PictureFullMsg> create(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "persons", required = false, defaultValue = "") String persons,
+            @RequestParam(value = "projects", required = false, defaultValue = "") String projects) {
+        ...
+    }
+
+```
+Hier setzt die Methode voraus, dass in der FormData, die im Request 
+steht, folgende Felder gibt:
+
+1. file: Die hochgeladene Datei
+2. persons (optional): Ein String. Hier wird vorausgesetzt, dass die IDs 
+der Personen mit "," oder ";" getrennt sind.
+3. projects (optional): Ein String, ähnlich persons
+
+Der Grund: In FormData können wir keine "nested objects" übergeben. Daher
+nur die einzelnen IDs. 
+
+
+### Tests
+
+Wenn man H2 als Test-Datenbank verwendet und -- so wie ich das hier --
+programmatisch die Daten einfügt, so muss man damit rechnen, dass diese 
+Daten bei einem TestSuite zwischen den einzelnen Tests bestehen bleibt.
+Das bedeutet v.a., auch wenn man am Ende vom Test die Daten wieder
+programmatisch löscht, die nächste ID bereits um 1 erhöht wird. Deswegen
+muss ich statische Felder verwenden, welche die IDs neu ausliest, denn
+ich kann nicht mehr voraussetzen, dass eine Person, die vorher die
+ID 1 bekommen hat, wieder die ID 1 hat: Hibernate hat ja bereits eine 
+Person mit 1 angelegt, und die nächste verfügbare ID ist eine höhere
+Zahl...
+

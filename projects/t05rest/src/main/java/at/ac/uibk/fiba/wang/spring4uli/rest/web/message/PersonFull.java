@@ -14,7 +14,7 @@ public class PersonFull extends PersonFW {
 
     public List<ProjectFW> asLaborator;
 
-    protected PersonFull(PersonFW fw, List<ProjectFW> asLeader,
+    public PersonFull(PersonFW fw, List<ProjectFW> asLeader,
                       List<ProjectFW> asLaborator) {
         super(fw.id, fw.name, fw.email, fw.info);
         this.asLeader = asLeader;

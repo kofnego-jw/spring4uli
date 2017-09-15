@@ -4,6 +4,7 @@ import at.ac.uibk.fiba.wang.spring4uli.jpa.H2TestBase;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Picture;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PersonRepo;
 import at.ac.uibk.fiba.wang.spring4uli.testhelper.TestData;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -77,14 +78,31 @@ public class PictureServiceTest extends H2TestBase {
     }
 
     @Test
-    public void t06_deletePictures() {
+    public void t06_updatePicture() throws Exception {
+        Picture p = service.findOne("sample.jpg");
+        p.getProjects().remove(projectRepo.findByName("Project one"));
+        p.getPersons().add(personRepo.findByName("Dana"));
+        service.saveOrUpdate(p);
+    }
+
+    @Test
+    public void t06a_assertMorePictures() {
+        List<String> list = service.listAllContainingPerson(personRepo.findByName("Dana"));
+        Assert.assertEquals(1, list.size());
+        list = service.listAllContainingProject(projectRepo.findByName("Project one"));
+        Assert.assertEquals(0, list.size());
+
+    }
+
+    @Test
+    public void t07_deletePictures() {
         List<String> paths = service.listAll();
         paths.stream()
                 .forEach(x -> service.delete(x));
     }
 
     @Test
-    public void t07_assertNoMorePictures() {
+    public void t08_assertNoMorePictures() {
         List<String> paths = service.listAll();
         Assert.assertTrue(paths.isEmpty());
     }

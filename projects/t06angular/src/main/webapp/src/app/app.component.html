@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="row">
+    <header>
+      <div class="col-md-12 text-center">
+        <h1>Spring 4 Underdogs Like I</h1>
+      </div>
+    </header>
+  </div>
+  <div class="row">
+    <nav>
+      <div class="col-md-12">
+        <ul class="nav nav-pills">
+          <li routerLinkActive="active"><a routerLink="/home">Willkommen</a></li>
+          <li><a href="">Personen</a></li>
+          <li><a href="">Projekte</a></li>
+          <li><a href="">Bilder</a></li>
+          <li routerLinkActive="active"><a routerLink="/impressum">Impressum</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="row">
+    <main>
+      <div id="mainView">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+  <div class="row">
+    <footer>
+      <app-footer></app-footer>
+    </footer>
+  </div>
+</div>

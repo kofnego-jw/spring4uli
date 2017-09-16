@@ -14,6 +14,7 @@
         <module>t04jpa</module>
         <module>testhelper</module>
         <module>t05rest</module>
+        <module>t06angular</module>
     </modules>
 
     <packaging>pom</packaging>

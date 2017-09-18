@@ -1,0 +1,15 @@
+<div class="row">
+  <div class="col-md-12">
+    <h3>Bild-Details</h3>
+    <hr/>
+    <p>Sie bearbeiten gerade {{picture.id}} : {{picture.path}}.</p>
+  </div>
+  <div class="col-md-12">
+    <h4>Haupt-Bild</h4>
+    <img [src]="getContentData()" alt="Hauptbild" />
+  </div>
+  <div class="col-md-12">
+    <h4>Thumbnail</h4>
+    <img [src]="getThumbData()" alt="Thumbnail" />
+  </div>
+</div>

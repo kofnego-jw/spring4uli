@@ -1,0 +1,100 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Projekt-Details</h2>
+    <hr/>
+    <p>Sie bearbeiten gerade diese Personen: </p>
+    <form #projectForm="ngForm">
+      <table class="table">
+        <tr>
+          <th width="20%">ID</th>
+          <td width="40%">{{project.id}}</td>
+          <td width="40%">&nbsp;</td>
+        </tr>
+        <tr>
+          <th><label for="nameInput">Name</label></th>
+          <td>{{project.name}}</td>
+          <td>
+            <input class="form-control" id="nameInput" required [(ngModel)]="project.name"
+                   name="name" #projectName="ngModel" />
+            <div *ngIf="projectName.invalid && (projectName.dirty || projectName.touched)"
+                 class="alert alert-danger">
+              <div *ngIf="projectName.errors.required">
+                Name muss sein.
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th><label for="goalInput">Ziel</label></th>
+          <td>{{project.goal}}</td>
+          <td><input id="goalInput" name="goal" [(ngModel)]="project.goal" class="form-control" /></td>
+        </tr>
+        <tr>
+          <th><label for="leaderInput">Leiter</label> </th>
+          <td>
+            <span *ngIf="project.leader">{{project.leader.id}}: {{project.leader.name}}</span>
+            <span *ngIf="!project.leader">--</span>
+          </td>
+          <td>
+            <select id="leaderInput" name="leader" [(ngModel)]="myLeaderId" (change)="setProjectLeader()">
+              <option value="0">--</option>
+              <option *ngFor="let person of personList" [value]="person.id">{{person.id}}: {{person.name}}</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th><label for="laboratorInput">Mitarbeiter</label></th>
+          <td>
+            <ul>
+              <li *ngFor="let labor of project.laborators">{{labor.id}}: {{labor.name}}</li>
+            </ul>
+          </td>
+          <td><button type="button" id="laboratorInput"
+                      (click)="openPersonSelectorModal()">Mitarbeiter auswählen</button></td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>
+            <button type="button" [disabled]="!projectChanged && !projectForm.dirty"
+                    (click)="saveProject()">Abspeichern</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <div>
+      <p *ngIf="project.id">Sie können dieses Projekt <button (click)="deleteProject()">löschen</button>,
+      Informationen über Leiter und Mitarbeiter werden mitgelöscht.</p>
+    </div>
+  </div>
+
+  <ng-template #personSelector>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Personen-Auswahl</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="personSelectorModal.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let person of personList">
+          <td>{{person.id}}</td>
+          <td>{{person.name}}</td>
+          <td>
+            <input type="checkbox" [checked]="findIndexOfLaborator(person)!=-1"
+                   (click)="toggleLaborator(person)" />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+</div>

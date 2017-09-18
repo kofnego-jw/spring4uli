@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Projekt-Liste</h2>
+    <hr/>
+    <p>Hier sind alle Projekte aufgelistet, die in der Datenbank sind.</p>
+    <div class="scrollable" style="max-height: 39rem;">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th width="12.5%">ID</th>
+          <th width="25%">Name</th>
+          <th width="25%">Ziel</th>
+          <th width="25%">Leiter</th>
+          <th width="12.5%">&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let project of projectList">
+          <td>{{project.id}}</td>
+          <td>{{project.name}}</td>
+          <td>{{project.goal}}</td>
+          <td><span *ngIf="project.leader">{{project.leader.id}}: {{project.leader.name}}</span></td>
+          <td>
+            <button [routerLink]="'/project/edit/' + project.id" class="glyphicon glyphicon-pencil"></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

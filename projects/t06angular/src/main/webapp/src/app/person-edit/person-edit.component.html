@@ -1,0 +1,69 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Person-Details</h2>
+    <hr/>
+    <p>Sie bearbeiten gerade diese Personen: </p>
+    <form #personForm="ngForm">
+      <table class="table">
+        <tr>
+          <th width="20%">ID</th>
+          <td width="40%">{{person.id}}</td>
+          <td width="40%">&nbsp;</td>
+        </tr>
+        <tr>
+          <th><label for="nameInput">Name</label></th>
+          <td>{{person.name}}</td>
+          <td>
+            <input class="form-control" id="nameInput" required [(ngModel)]="person.name"
+                   name="name" #personName="ngModel" />
+            <div *ngIf="personName.invalid && (personName.dirty || personName.touched)"
+                 class="alert alert-danger">
+              <div *ngIf="inputName.errors.required">
+                Name muss sein.
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th><label for="emailInput">Email</label></th>
+          <td>{{person.email}}</td>
+          <td><input id="emailInput" name="email" [(ngModel)]="person.email" class="form-control" /></td>
+        </tr>
+        <tr>
+          <th><label for="infoInput">Info</label> </th>
+          <td>{{person.info}}</td>
+          <td><textarea class="form-control" id="infoInput" [(ngModel)]="person.info" name="info"></textarea></td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>
+            <button [disabled]="!personForm.dirty" (click)="savePerson()">Abspeichern</button>
+          </td>
+        </tr>
+        <tr>
+          <th>LeiterIn von</th>
+          <td colspan="2">
+            <ul>
+              <li *ngFor="let proj of person.asLeader">{{proj.id}}: {{proj.name}}</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th>MitarbeiterIn von</th>
+          <td colspan="2">
+            <ul>
+              <li *ngFor="let proj of person.asLaborator">{{proj.id}}: {{proj.name}}</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <div *ngIf="person.asLeader.length || person.asLaborator.length">
+      <p>Wenn Sie diese Person aus der Datenbank löschen wollen, nehmen Sie sie bitte vom Dienst.</p>
+    </div>
+    <div *ngIf="person.id && !person.asLeader.length && !person.asLaborator.length">
+      <p>Sie können diese Person <button (click)="deletePerson()">löschen</button>.</p>
+    </div>
+  </div>
+</div>

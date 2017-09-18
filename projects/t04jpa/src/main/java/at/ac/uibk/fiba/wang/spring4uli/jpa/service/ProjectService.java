@@ -2,7 +2,9 @@ package at.ac.uibk.fiba.wang.spring4uli.jpa.service;
 
 import at.ac.uibk.fiba.wang.spring4uli.jpa.MyJpaException;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.PictureProjection;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PictureRepo;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.ProjectRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +25,13 @@ public class ProjectService {
 
     private final PersonService personService;
 
+    private final PictureRepo pictureRepo;
+
     @Autowired
-    public ProjectService(ProjectRepo projectRepo, PersonService service) {
+    public ProjectService(ProjectRepo projectRepo, PersonService service, PictureRepo pictureRepo) {
         this.projectRepo = projectRepo;
         this.personService = service;
+        this.pictureRepo = pictureRepo;
     }
 
     public List<Project> findAll() {
@@ -39,6 +44,13 @@ public class ProjectService {
 
     public Project findOne(String name) {
         return projectRepo.findByName(name);
+    }
+
+    public ProjectFullInfo getFullInfo(Long id) {
+        Project p = findOne(id);
+        if (p==null) return null;
+        List<PictureProjection> inPictures = pictureRepo.findAllPicturesContainingProject(p);
+        return new ProjectFullInfo(p, inPictures);
     }
 
     private Project mergeToDb(Project p) {

@@ -22,7 +22,7 @@ export class PersonEditComponent implements OnInit, OnDestroy {
   constructor(private activatedRoute:ActivatedRoute, private personService:PersonService, private router:Router) { }
 
   ngOnInit() {
-    this.person = {id:null, name:null, email:null, info:null, asLaborator:[], asLeader:[]};
+    this.person = {id:null, name:null, email:null, info:null, asLaborator:[], asLeader:[], inPictures:[]};
     this.personSubscription = this.personService.personInDetail.subscribe(
       person => {
         this.person = person;

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class ProjectControllerTest extends H2TestBase {
                 new PersonFW(danaId, null, null,  null)
         );
         ProjectFull full = new ProjectFull(null, "Project three", "Destroy the universe",
-                leader, labors);
+                leader, labors, Collections.emptyList());
         ResponseEntity<ProjectFullMsg> resp = controller.create(full);
         Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
         Assert.assertEquals(2, resp.getBody().project.laborators.size());
@@ -62,7 +63,7 @@ public class ProjectControllerTest extends H2TestBase {
 
     @Test
     public void t04_createNewFail() {
-        ProjectFull full = new ProjectFull(null, "Project three", "blah", null, null);
+        ProjectFull full = new ProjectFull(null, "Project three", "blah", null, null, null);
         ResponseEntity<ProjectFullMsg> resp = controller.create(full);
         Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, resp.getStatusCode());
     }
@@ -75,7 +76,7 @@ public class ProjectControllerTest extends H2TestBase {
                 new PersonFW(danaId, null, null,  null)
         );
         ProjectFull full = new ProjectFull(projectId, "Project three", "Destroy the universe",
-                leader, labors);
+                leader, labors, Collections.emptyList());
         ResponseEntity<ProjectFullMsg> resp = controller.update(full, projectId);
         ProjectFull result = resp.getBody().project;
         Assert.assertEquals("Berta", result.leader.name);

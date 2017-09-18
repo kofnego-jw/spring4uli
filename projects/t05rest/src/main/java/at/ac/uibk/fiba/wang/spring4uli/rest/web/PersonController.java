@@ -39,7 +39,7 @@ public class PersonController {
                     .body(new PersonFullMsg("Cannot find Person with id " + id + "."));
         }
         return ResponseEntity.ok(
-                new PersonFullMsg(PersonFull.createPersonFull(info.person, info.asLeader, info.asLaborator))
+                new PersonFullMsg(PersonFull.createPersonFull(info))
         );
     }
 

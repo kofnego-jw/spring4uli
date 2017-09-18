@@ -1,15 +1,150 @@
-<div class="row">
-  <div class="col-md-12">
+<div class="row scrollable" style="height: 55rem;">
+  <div class="col-md-12 sticky">
     <h3>Bild-Details</h3>
     <hr/>
-    <p>Sie bearbeiten gerade {{picture.id}} : {{picture.path}}.</p>
+  </div>
+  <div class="col-md-12">
+    <div>
+      <form #pictureForm="ngForm">
+        <table class="table table-hover">
+          <tr>
+            <th>ID</th>
+            <td>{{picture.id}}</td>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <th><label for="nameInput">Name</label></th>
+            <td>{{picture.path}}</td>
+            <td>
+              <input id="nameInput" class="form-control" name="picturePath" #picturePath
+                     [(ngModel)]="picture.path" required />
+              <div *ngIf="picturePath.invalid && (picturePath.dirty || picturePath.touched)"
+                   class="alert alert-danger">
+                <div *ngIf="picturePath.errors.required">
+                  Pfad muss sein.
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th><label for="typeInput">Typ</label> </th>
+            <td>{{picture.type}}</td>
+            <td>
+              <select id="typeInput" class="form-control" name="typeInput" [(ngModel)]="picture.type">
+                <option value="UNKNOWN">Unbekannt</option>
+                <option value="TIFF">TIFF</option>
+                <option value="JPEG">JPEG</option>
+                <option value="PNG">PNG</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th>Personen</th>
+            <td>
+              <ul>
+                <li *ngFor="let person of picture.persons">{{person.id}}: {{person.name}}</li>
+              </ul>
+            </td>
+            <td><button type="button" (click)="showPersonSelector()">Bearbeiten</button></td>
+          </tr>
+          <tr>
+            <th>Projekte</th>
+            <td>
+              <ul>
+                <li *ngFor="let proj of picture.projects">{{proj.id}}: {{proj.name}}</li>
+              </ul>
+            </td>
+            <td><button type="button" (click)="showProjectSelector()">Bearbeiten</button></td>
+          </tr>
+          <tr>
+            <th>Datei-Upload</th>
+            <td>&nbsp;</td>
+            <td>
+              <input type="file" #fileInput name="fileInput" (change)="readFile()" class="form-control" />
+            </td>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <td>&nbsp;</td>
+            <td>
+              <button type="button" (click)="savePicture()">Abspeichern</button>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
   </div>
   <div class="col-md-12">
     <h4>Haupt-Bild</h4>
-    <img [src]="getContentData()" alt="Hauptbild" />
+    <img [src]="getContentData()" alt="Hauptbild" class="img-responsive" />
   </div>
   <div class="col-md-12">
     <h4>Thumbnail</h4>
     <img [src]="getThumbData()" alt="Thumbnail" />
   </div>
+  <div class="col-md-12">
+    <p *ngIf="picture.id">Sie können dieses Bild <button (click)="deletePicture()">löschen</button>.</p>
+  </div>
+
+  <ng-template #personSelector>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Personen-Auswahl</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="personSelectorModal.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let person of personList">
+          <td>{{person.id}}</td>
+          <td>{{person.name}}</td>
+          <td>
+            <input type="checkbox" [checked]="findIndexOfPerson(person)!=-1"
+                   (click)="togglePerson(person)" />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+
+
+  <ng-template #projectSelector>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Projekt-Auswahl</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="projectSelectorModal.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let project of projectList">
+          <td>{{project.id}}</td>
+          <td>{{project.name}}</td>
+          <td>
+            <input type="checkbox" [checked]="findIndexOfProject(project)!=-1"
+                   (click)="toggleProject(project)" />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </ng-template>
 </div>

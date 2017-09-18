@@ -16,3 +16,10 @@ thead th {
   top: 0px;
   background-color: white;
 }
+
+.sticky {
+  position: sticky;
+  z-index: 100;
+  top: 0px;
+  background-color: white;
+}

@@ -2,6 +2,8 @@ package at.ac.uibk.fiba.wang.spring4uli.rest.web.message;
 
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Picture;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.PictureType;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -17,8 +19,14 @@ public class PictureFull extends PictureFW {
 
     public final byte[] thumb;
 
-    public PictureFull(Long id, String path, String type, List<PersonFW> persons, List<ProjectFW> projects,
-                       byte[] content, byte[] thumb) {
+    @JsonCreator
+    public PictureFull(@JsonProperty("id") Long id,
+                       @JsonProperty("path") String path,
+                       @JsonProperty("type") String type,
+                       @JsonProperty("persons") List<PersonFW> persons,
+                       @JsonProperty("projects") List<ProjectFW> projects,
+                       @JsonProperty("content") byte[] content,
+                       @JsonProperty("thumb") byte[] thumb) {
         super(id, path);
         this.type = type;
         this.persons = persons;

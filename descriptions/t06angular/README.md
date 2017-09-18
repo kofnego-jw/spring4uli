@@ -900,9 +900,9 @@ wir ein <select> Element, das am Anfang eine leere Option hat und dann
 die Personen der ID nach auflistet.
 
 Um überhaupt eine Liste von Personen zu haben, ist es notwendig, dass
-der Controller `PersonService` bekommt und dort die `personList` 
+die Komponente `PersonService` bekommt und dort die `personList` 
 abonniert. So steht es im Konstruktor und ngOnInit() von 
-`ProjectEditController`:
+`ProjectEditComponent`:
 
 ``` 
   constructor(private projectService:ProjectService, private activatedRoute:ActivatedRoute,
@@ -994,7 +994,7 @@ So dann steht uns einige Module zur Verfügung, die wir in
 über `ModalModule.forRoot()` eingebunden, und muss auch über
 `import {ModalModule} from "ngx-bootstrap";` importiert werden.
 
-Ein Modalfenster wird über eine Methode im Controller
+Ein Modalfenster wird über eine Methode in der Komponente
 geöffnet:
 
 ```
@@ -1015,7 +1015,7 @@ dieses Modal dann schließen. Bleibt noch personSelectorTemplate!
 
 Das Feld "personSelectorTemplate" wird über die Annotation 
 @ViewChild("#name") eingebracht. Die Annotation besagt, dass man jenes
-Element mit dem Namen "name" in den Controller einbringt. 
+Element mit dem Namen "name" in die Komponente einbringt. 
 Ähnlich wie bei HTMLFormElement kann man auch ein Template mittels
 "#name" kennzeichnen. Sehen wir uns das Template in der Datei
 `project-edit.component.html` an:
@@ -1056,7 +1056,7 @@ Element mit dem Namen "name" in den Controller einbringt.
 Wir sehen, ich habe das Template direkt von der Website von
 ngx-bootstrap kopiert. Beim Schließ-Button sieht man, warum ich
 dieses Modal ein Feld zugewiesen habe. Nun kann ich dieses Feld
-im Controller verwenden, um es zu schließen:
+in Component verwenden, um es zu schließen:
 `(click)="personSelectorModal.hide()"` 
 
 Die Tablle stellt alle Personen dar und fügt überall eine Checkbox
@@ -1067,7 +1067,7 @@ hinzu:
        (click)="toggleLaborator(person)" />
 ```
 
-Die beiden Methoden im Controller kann man leicht nachlesen. Die 
+Die beiden Methoden in der Komponente kann man leicht nachlesen. Die 
 Methode `findIndexOfLaborator(person)` sucht nach der Index von
 der Person. Ist die Person in project.laborators vorhanden, wird
 die Index (startend von 0) zurückgegeben. Ist die Person nicht
@@ -1076,4 +1076,117 @@ in der Liste vorhanden, wird -1 zurück gegeben. Und mit
 oder von ihr gelöscht.
 
 
+### FileUpload-Light: Über JSON Dateien hochladen
 
+Es bleibt noch ein letzter Detail im PictureComponent: Datei-Upload. 
+Hier wird der Weg geschildert, wie man über JSON-Requests die 
+Datei auch die Datei hochlädt.
+
+Voraussetzung dafür ist, dass beim File-Selektor ein Name angebracht
+ist, der in der Komponente dann zur Verfügung steht:
+
+``` 
+<input type="file" #fileInput name="fileInput" (change)="readFile()" 
+       class="form-control" />
+```
+
+In PictureEditComponent wird dann per @ViewChild() auf dieses Input-Element
+zugegriffen.
+
+``` 
+@ViewChild("fileInput") fileInput:ElementRef;
+```
+
+Und so kann man dann, sobald dieses Input verändert wird (change), 
+die Datei einlesen und zu Base64-String umwandeln:
+
+``` 
+  readFile():void {
+    if (!this.fileInput.nativeElement.files) {
+      console.log("No files found.");
+      console.log(this.fileInput);
+      return;
+    }
+    const files:File[] = this.fileInput.nativeElement.files;
+    if (!files.length) {
+      console.log("No file found.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      let result:string = reader.result;
+      let pattern:RegExp = /^data:(.*?);base64,(.*)/;
+      let matcher = pattern.exec(result);
+      this.picture.content = matcher[2];
+      let imgType:string = matcher[1];
+      if (imgType.indexOf("jpeg") != -1) {
+        this.picture.type="JPEG";
+      } else if (imgType.indexOf("tiff") != -1) {
+        this.picture.type = "TIFF";
+      } else if (imgType.indexOf("png") != -1) {
+        this.picture.type = "PNG"
+      } else {
+        this.picture.type = "UNKNOWN";
+      }
+      this.picture.path = files[0].name;
+      this.pictureChanged = true;
+    };
+    reader.readAsDataURL(files[0]);
+  }
+
+```
+
+Mittels eines neuen FileReaders kann man die Daten in JavaScript
+auslesen. Der FileReader funktioniert scheinbar so: mit 
+readAsDataUrl(file) wird die Datei eingelesen und in result
+bereitgestellt. Dann wird die Methode onload() von FileReader
+ausgeführt, bzw. wenn Fehler auftaucht: onerror().
+
+Deswegen schreiben wir zuerst in onload, was mit result zu
+geschehen ist: Mittels RegExp wird der String analysiert:
+die ersten Zeichen lauten immer "data:", dann kommt der MimeType,
+und dann ";base64,", und danach der eigentliche Datei-Inhalt.
+
+
+## Angular Kompilieren und dann SpringApp kompilieren.
+
+Wenn man zufrieden ist mit dem Frontend, kann man über den Befehl
+
+`ng build`
+
+das Verzeichnis "src/main/resources/static" erstellen lassen. 
+Danach kann man über 
+
+`maven clean package`
+
+das Projekt als JAR-Datei erstellen. Das Ergebnis, die Datei
+`at.ac.uibk.fiba.wang.spring4uli.angular-0.0.1-SNAPSHOT.jar` 
+kann man per 
+
+`java -jar at.ac.uibk.fiba.wang.spring4uli.angular-0.0.1-SNAPSHOT.jar`
+
+starten. (Vorher MySQL-Server starten und die Datenbank 
+einrichten.) Dann kann man in Browser auf 
+
+`http://localhost:56790/t06/` surfen. Das Ergebnis ist genau
+gleich wie beim Dev-Server.
+
+
+### Hash-Routing?
+
+Leider unterstützt Spring von selbst noch nicht HTML5-Routen,
+daher müsste man Hash-Routing verwenden, wenn man die URLs 
+an der gleichen Stelle platzieren will. 
+
+Also: Statt "http://localhost:56790/t06/person" müsste man dann
+"http://localhost:56790/t06/#/person" schreiben. Hash schaut 
+vielleicht nicht schön aus, dafür läuft diese Art von Routen 
+überall. Die Einstellung geschieht in `app.module.ts`. Dort,
+wo man die Pfade importiert, kann man die Option "useHash" auf
+"true" stellen:
+
+``` 
+    RouterModule.forRoot(appRoutes, {useHash: true})
+```
+
+Dann bleibt der Link auch unter Spring okay.

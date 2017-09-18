@@ -43,7 +43,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.project = {id:null, name:null, goal:null, leader:null, laborators:[]};
+    this.project = {id:null, name:null, goal:null, leader:null, laborators:[], inPictures:[]};
     this.projectSubscription = this.projectService.project
       .subscribe(proj => {
         this.project = proj;

@@ -74,7 +74,7 @@ const appRoutes: Routes = [
     HttpClientModule,
     FormsModule,
     ModalModule.forRoot(),
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes, {useHash: true})
   ],
   providers: [MessageService, PersonService, ProjectService, PictureService],
   bootstrap: [AppComponent]

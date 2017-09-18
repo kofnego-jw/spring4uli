@@ -2,8 +2,10 @@ package at.ac.uibk.fiba.wang.spring4uli.jpa.service;
 
 import at.ac.uibk.fiba.wang.spring4uli.jpa.MyJpaException;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Person;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.PictureProjection;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PersonRepo;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.PictureRepo;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.repository.ProjectRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +26,13 @@ public class PersonService {
 
     private final ProjectRepo projectRepo;
 
+    private final PictureRepo pictureRepo;
+
     @Autowired
-    public PersonService(PersonRepo repo, ProjectRepo projectRepo) {
+    public PersonService(PersonRepo repo, ProjectRepo projectRepo, PictureRepo pictureRepo) {
         this.repo = repo;
         this.projectRepo = projectRepo;
+        this.pictureRepo = pictureRepo;
     }
 
     public List<Person> findAll() {
@@ -56,7 +61,8 @@ public class PersonService {
         if (p==null) return null;
         List<Project> asLeader = projectRepo.findAllByLeader(p);
         List<Project> asLaborator = projectRepo.findAllByLaboratorsHavingPerson(p);
-        return new PersonFullInfo(p, asLeader, asLaborator);
+        List<PictureProjection> inPicture = pictureRepo.findAllPicturesContainingPerson(p);
+        return new PersonFullInfo(p, asLeader, asLaborator, inPicture);
     }
 
     public void delete(Long id) {

@@ -1,6 +1,7 @@
 package at.ac.uibk.fiba.wang.spring4uli.rest.web;
 
 import at.ac.uibk.fiba.wang.spring4uli.jpa.ontology.Project;
+import at.ac.uibk.fiba.wang.spring4uli.jpa.service.ProjectFullInfo;
 import at.ac.uibk.fiba.wang.spring4uli.jpa.service.ProjectService;
 import at.ac.uibk.fiba.wang.spring4uli.rest.web.message.ProjectFW;
 import at.ac.uibk.fiba.wang.spring4uli.rest.web.message.ProjectFull;
@@ -28,7 +29,7 @@ public class ProjectController {
 
     @RequestMapping("/{id}")
     public ResponseEntity<ProjectFullMsg> findOne(@PathVariable("id") Long id) {
-        Project p = projectService.findOne(id);
+        ProjectFullInfo p = projectService.getFullInfo(id);
         if (p==null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ProjectFullMsg("Cannot find a project with ID " + id + "."));
@@ -60,7 +61,7 @@ public class ProjectController {
     private ResponseEntity<ProjectFullMsg> createOrUpdate(Project project) {
         try {
             Project saved = projectService.saveOrUpdate(project);
-            return ResponseEntity.ok(new ProjectFullMsg(ProjectFull.createProjectFull(saved)));
+            return findOne(saved.getId());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ProjectFullMsg("Cannot save project: " + e.getMessage()));

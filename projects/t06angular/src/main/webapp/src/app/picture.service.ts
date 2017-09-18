@@ -43,4 +43,46 @@ export class PictureService implements OnInit{
         this.messageService.handleErrorResponse(err);
       });
   }
+
+  savePicture(picture:PictureFull):void {
+    if (picture.id) {
+      this.updatePicture(picture);
+      return;
+    }
+    this.http.put<PictureFullMsg>("api/picture", picture)
+      .subscribe(msg => {
+        this.messageService.handleMessageResponse(msg);
+        this.picture.next(msg.picture);
+      }, err => {
+        this.messageService.handleErrorResponse(err);
+      });
+  }
+
+  updatePicture(picture:PictureFull):void {
+    if (!picture.id) {
+      console.log("Cannot update without id.");
+      return;
+    }
+    const id = picture.id;
+    this.http.patch<PictureFullMsg>("api/picture/" + id, picture)
+      .subscribe(msg => {
+        this.messageService.handleMessageResponse(msg);
+        this.picture.next(msg.picture);
+      }, err => {
+        this.messageService.handleErrorResponse(err);
+      });
+  }
+
+  deletePicture(id:number):void {
+    const url = "api/picture/" + id;
+    this.http.delete<PictureListMsg>(url)
+      .subscribe(msg => {
+        this.messageService.handleMessageResponse(msg);
+        this.pictureList.next(msg.pictureList);
+      }, err => {
+        this.messageService.handleErrorResponse(err);
+      });
+  }
+
+
 }

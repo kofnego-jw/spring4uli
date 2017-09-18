@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,6 +85,63 @@ public class PictureController {
                     .body(new PictureFullMsg("Cannot read uploaded file: " + e.getMessage()));
         }
         return createOrUpdate(pict, persons, projects);
+    }
+
+    @RequestMapping(value = "", method = {RequestMethod.PUT})
+    public ResponseEntity<PictureFullMsg> create(@RequestBody PictureFull pict) {
+        if (pict.id!=null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new PictureFullMsg("Cannot create picture with id."));
+        }
+        if (pict.content==null || pict.content.length==0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new PictureFullMsg("Cannot create picture without content."));
+        }
+        Picture picture = new Picture();
+        picture.setPath(pict.path);
+        picture.setType(stringToType(pict.type));
+        picture.setPersons(toPersonSet(pict.persons));
+        picture.setProjects(toProjectSet(pict.projects));
+        picture.setContent(pict.content);
+        try {
+            picture = pictureService.saveOrUpdate(picture);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new PictureFullMsg("Cannot create new picture: " + e.getMessage()));
+        }
+        byte[] thumb = imageService.createThumb(picture);
+        return ResponseEntity.ok(new PictureFullMsg(PictureFull.createPictureFull(picture, thumb)));
+    }
+
+    @RequestMapping(value = "/{id}", method = {RequestMethod.PATCH})
+    public ResponseEntity<PictureFullMsg> updateUsingJSON(@RequestBody PictureFull pict, @PathVariable("id") Long id) {
+        if (!id.equals(pict.id)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new PictureFullMsg("Cannot update picture if ids are inconsistent."));
+        }
+        Picture picture = pictureService.findOne(id);
+        if (picture==null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new PictureFullMsg("Cannot update picture, no picture with this id found."));
+        }
+        picture.setPath(pict.path);
+        PictureType type = stringToType(pict.type);
+        picture.setType(type);
+        Set<Person> persons = toPersonSet(pict.persons);
+        picture.setPersons(persons);
+        Set<Project> projects = toProjectSet(pict.projects);
+        picture.setProjects(projects);
+        if (pict.content!=null) {
+            picture.setContent(pict.content);
+        }
+        try {
+            picture = pictureService.saveOrUpdate(picture);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new PictureFullMsg("Cannot update picture: " + e.getMessage()));
+        }
+        byte[] thumb = imageService.createThumb(picture);
+        return ResponseEntity.ok(new PictureFullMsg(PictureFull.createPictureFull(picture, thumb)));
     }
 
     @RequestMapping(value = "/{id}", method = {RequestMethod.POST, RequestMethod.PUT})
@@ -191,6 +249,30 @@ public class PictureController {
                     .body(new PictureListMsg("Cannot delete picture with ID " + id + ": " + e.getMessage()));
         }
         return listAll();
+    }
+
+
+    private static PictureType stringToType(String s) {
+        if (s==null) return PictureType.UNKNOWN;
+        try {
+            return PictureType.valueOf(s.toUpperCase().trim());
+        } catch (Exception e) {
+            return PictureType.UNKNOWN;
+        }
+    }
+
+    private static Set<Person> toPersonSet(List<PersonFW> persons) {
+        return persons==null ? Collections.emptySet() :
+                persons.stream()
+                .map(p -> p.toPerson())
+                .collect(Collectors.toSet());
+    }
+
+    private static Set<Project> toProjectSet(List<ProjectFW> projects) {
+        return projects==null ? Collections.emptySet() :
+                projects.stream()
+                .map(x -> x.toProject())
+                .collect(Collectors.toSet());
     }
 
 }

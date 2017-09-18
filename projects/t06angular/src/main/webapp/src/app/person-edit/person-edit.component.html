@@ -1,7 +1,9 @@
-<div class="row">
-  <div class="col-md-12">
+<div class="row scrollable" style="height: 55rem;">
+  <div class="col-md-12 sticky">
     <h2>Person-Details</h2>
     <hr/>
+  </div>
+  <div class="col-md-12">
     <p>Sie bearbeiten gerade diese Personen: </p>
     <form #personForm="ngForm">
       <table class="table">
@@ -45,7 +47,8 @@
           <th>LeiterIn von</th>
           <td colspan="2">
             <ul>
-              <li *ngFor="let proj of person.asLeader">{{proj.id}}: {{proj.name}}</li>
+              <li *ngFor="let proj of person.asLeader">{{proj.id}}: {{proj.name}}
+                <a [routerLink]="'/project/edit/' + proj.id"><span class="glyphicon glyphicon-pencil"></span></a></li>
             </ul>
           </td>
         </tr>
@@ -53,7 +56,20 @@
           <th>MitarbeiterIn von</th>
           <td colspan="2">
             <ul>
-              <li *ngFor="let proj of person.asLaborator">{{proj.id}}: {{proj.name}}</li>
+              <li *ngFor="let proj of person.asLaborator">{{proj.id}}: {{proj.name}}
+                <a [routerLink]="'/project/edit/' + proj.id"><span class="glyphicon glyphicon-pencil"></span></a>
+              </li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th>Erscheint in Bildern</th>
+          <td colspan="2">
+            <ul>
+              <li *ngFor="let pict of person.inPictures">
+                {{pict.id}}: {{pict.path}}
+                <a [routerLink]="'/picture/edit/' + pict.id"><span class="glyphicon-pencil glyphicon"></span></a>
+              </li>
             </ul>
           </td>
         </tr>

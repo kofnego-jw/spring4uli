@@ -4,6 +4,8 @@ Damit diese Erläuterungen sinnvoll eingesetzt werden können, sollte man Kenntn
 
 * Java
 * Maven
+* Javascript
+* HTML, CSS
 
 verfügen. V.a. sollte man wissen, wie man in Java programmiert und wie Maven-Projekte
 aufgebaut sind.

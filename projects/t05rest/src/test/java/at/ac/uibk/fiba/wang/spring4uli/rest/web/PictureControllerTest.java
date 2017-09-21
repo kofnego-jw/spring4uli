@@ -109,7 +109,46 @@ public class PictureControllerTest extends H2TestBase {
         Assert.assertEquals(1, resp.getBody().pictureList.size());
         resp = controller.findByProject(project1Id);
         Assert.assertEquals(1, resp.getBody().pictureList.size());
+    }
 
+    private static byte[] pngContent;
+
+    @Test
+    public void t03b_cachePngContent() {
+        ResponseEntity<PictureFullMsg> one = controller.findOne(pictId);
+        Assert.assertEquals(HttpStatus.OK, one.getStatusCode());
+        pngContent = one.getBody().picture.content;
+    }
+
+    @Test
+    public void t04a_updateUsingJSON() {
+        byte[] content = null;
+        byte[] thumb = null;
+        List<PersonFW> persons = PersonFW.createPersonFWs(personRepo.findAll(Arrays.asList(Long.valueOf(1L), Long.valueOf(2L))));
+        List<ProjectFW> projects = ProjectFW.createProjectFWList(projectRepo.findAll(Arrays.asList(Long.valueOf(1L))));
+
+        PictureFull pf = new PictureFull(pictId, "newPath.png", "PNG", persons, projects, content, thumb);
+        ResponseEntity<PictureFullMsg> resp = controller.updateUsingJSON(pf, pictId);
+        Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
+    }
+
+    @Test
+    public void t04b_NoPictureUpdate() {
+        ResponseEntity<PictureFullMsg> pict = controller.findOne(pictId);
+        Assert.assertArrayEquals(pngContent, pict.getBody().picture.content);
+    }
+
+    @Test
+    public void t04c_updatePictureUsingJSON() throws Exception {
+        byte[] content = FileUtils.readFileToByteArray(new File("../testhelper/src/test/resources/sampleimages/sample.jpg"));
+        byte[] thumb = null;
+        List<PersonFW> persons = PersonFW.createPersonFWs(personRepo.findAll(Arrays.asList(Long.valueOf(2L), Long.valueOf(3L))));
+        List<ProjectFW> projects = ProjectFW.createProjectFWList(projectRepo.findAll(Arrays.asList(Long.valueOf(2L))));
+
+        PictureFull pf = new PictureFull(pictId, "newPath.jpeg", "JPEG", persons, projects, content, thumb);
+        ResponseEntity<PictureFullMsg> resp = controller.updateUsingJSON(pf, pictId);
+        Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
+        Assert.assertArrayEquals(resp.getBody().picture.content, content);
     }
 
     @Test
